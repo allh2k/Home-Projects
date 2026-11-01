@@ -1,0 +1,21 @@
+# Local secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+secrets.yaml
+secrets.yml
+
+# PlatformIO build output
+.pio/
+**/.pio/
+
+# Common generated files and caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+
+# Operating system files
+.DS_Store
+Thumbs.db
