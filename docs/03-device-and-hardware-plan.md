@@ -77,13 +77,12 @@ Some commands may be one-way toggles. If the appliance cannot report its state, 
 
 ## Power and enclosure
 
-- **Current power prototype:** two matched removable HiQuick NiMH AA cells in series (marked 1.2 V / 2800 mAh). The exact ESP32 board with the faulty 5 V rail still needs to be identified before selecting its regulator/input connection.
-- Build two independent rails from the pack: a regulated 3.3 V rail for the ESP32's verified power input and 3.3 V sensors, and a separate enabled/switched 5 V boost rail for the SPS30 and other 5 V loads. Both rails share ground. The 5 V rail must not depend on the faulty dev-board 5 V pin.
-- Feed 3.3 V sensors directly from the regulated 3.3 V distribution rail, not through GPIO or the dev board's 3.3 V output. Size the regulator for the ESP32's Wi-Fi bursts plus all simultaneous loads; Espressif recommends at least 500 mA for an ESP32-S3 supply.
-- Use a separate 5 V converter with enough peak headroom for the SPS30's fan start. Turn it off when the sensor is not sampling, and prevent I2C/level-shifter signal lines from back-powering an unpowered sensor.
-- Do not estimate battery runtime from the ESP chip's advertised sleep current. Measure the complete device at the battery pack, including the board regulator/LEDs, both DC/DC converters, sensors, Wi-Fi, and sampling schedule. A screen, Wi-Fi connection, or particle-sensor fan may make frequent recharging necessary.
-- Charge the removable AA cells in a charger designed for their chemistry; do not charge them inside the device. Keep the pair matched and define a conservative low-battery cutoff before room deployment. Lithium-ion cells are a separate later redesign.
-- A wooden outer case can be a finish, but it must not block airflow or trap heat. Design sensor openings and safe separation from warm components and any battery.
+- **Working bench state:** ESP32-S3 N16R8 and SHT41 are on USB; the SPS30 returns readings on a fused 5 V booster powered from a two-AA test pack. Four AA cells and ambient-light sensors are reported on hand. Full battery operation of the node is not yet demonstrated.
+- **Candidate Li-ion prototype:** two matching 18650 cells in the Pi Hut/DFRobot 2-way holder. The holder advertises USB charging, overcharge/over-discharge protection, reverse-cell-polarity protection, 5 V/2 A and 3.3 V/1 A outputs. The product listing does not establish every protection function required for a finished design, so verify short-circuit and overcurrent behavior. Exact cell and holder purchase is not confirmed. Check the ESP32 board's permitted input and avoid powering one rail from two converters simultaneously.
+- **Final-product direction:** use an integrated power board with Li-ion charging, cell protection, and regulated 5 V and 3.3 V rails. The small Pololu and other converter modules are useful for prototyping; they are not assumed to be the final installed assembly. Confirm cell configuration, current margins, thermal behavior, charging access, fusing, and low-voltage behavior before fixing the final design.
+- The 5 V rail must support the SPS30's fan-start peak. If it is switched for sampling, prevent I2C/level-shifter signal lines from back-powering an unpowered sensor.
+- Do not estimate battery runtime from the ESP chip's advertised sleep current. Measure the complete device at the battery pack, including board losses, sensors, Wi-Fi, and SPS30 sampling schedule.
+- A wooden outer case can be a finish, but it must not block airflow or trap heat. Design sensor openings, battery placement, and service access together.
 - Keep each device easy to open for service without exposed conductors during normal use.
 
 ## Official technical references
@@ -101,20 +100,21 @@ Some commands may be one-way toggles. If the appliance cannot report its state, 
 
 ## No-display two-zone room box
 
-This is the first indoor physical layout to mock up and may become the repeatable design for the 11 room boxes. Prove one unit before making the others. Keep a common enclosure and mounting pattern, but fit optional sensors only in rooms that need them. Outbuilding nodes need a separate weather-appropriate enclosure. This replaces the earlier brainstorm estimate of 160 × 110 × 70 mm external size: that estimate left too little usable space after wall thickness and a sensor bay were included.
+This is the first indoor physical layout to mock up and may become the repeatable design for the 11 room boxes. Prove one unit before making the others. Keep a common enclosure and mounting pattern, but fit optional sensors only in rooms that need them. Outbuilding nodes need a separate weather-appropriate enclosure. Gemini-generated concept images supplied by the user show a light-wood rectangular enclosure with two front sensor domes, right-side hatch and status LEDs, and a lower front perforated vent field. Treat these as visual references, not verified mechanical drawings.
 
-**Preliminary outside target:** 180 mm wide × 150 mm high × 80 mm deep. With 6 mm panels this leaves about 168 × 138 × 68 mm inside before adding a divider, mounts, and vent grilles. Reserve roughly 50 mm of clear internal height for the lower sensor bay; the upper electronics bay gets the remaining height. These are mock-up dimensions, not final cut dimensions.
+**Starting face size:** 150 mm wide × 180 mm high. **Depth to test:** 40 mm and 50 mm, alongside the 80 mm depth in the supplied concept image. These are mock-up alternatives, not final cut dimensions. At 6 mm wall thickness, approximate internal depth is only 28 mm at 40 mm external depth and 38 mm at 50 mm, before a back panel, mounting, hatch, wiring, or clearances. Check actual battery-holder, battery, SPS30, cable-bend, and board dimensions before selecting a depth. A 40 mm depth may prove too tight; 50 mm is the more useful first comparison.
 
 | Zone | Proposed contents and layout |
 | --- | --- |
-| Upper compartment | The selected ESP32 board, the two-AA holder, and separate 3.3 V and switched 5 V regulator modules. Keep the cells protected and removable for charging; provide an accessible power switch and service access. |
-| Divider | A physical shelf separates the ESP board, removable AA cells, and regulator modules from the lower sensor area. Use small, protected cable pass-throughs. |
+| Upper compartment | ESP32 board and prototype power assembly/battery holder. Preserve space for a future integrated charger/protection/dual-rail board. Provide charging and service access. |
+| Divider | A physical shelf separates the ESP board and battery/power assembly from the lower sensor area. Use small, protected cable pass-throughs. |
 | Lower air-quality bay | Sensirion SPS30 mounted close to its own case openings, with its two inlets and outlet unobstructed. Keep its outlet from blowing back into its inlets or toward the temperature/humidity sensor. |
 | Lower room-sensor nook | SHT41 breakout on short leads near its own passive vents. Keep it away from the ESP board, AA cell holder, and SPS30 outlet. Do not force SPS30 exhaust through this nook. |
-| Front face | Mount any future presence sensor facing the room, with a clear non-metallic aperture. Confirm its sensing works through the chosen face material before cutting a production enclosure. |
+| Front face | Two white circular sensor domes shown near the top, plus the lower perforated vent panel. The exact sensors behind the domes and their spacing are not yet fixed. Confirm motion-sensor operation through/at the aperture; wood must not cover a PIR lens. |
+| Right side | Concept shows a small battery/service hatch near the top with three status LEDs set away from the light sensor. Confirm clearances and access using the real holder and board before cutting. |
 
 The SPS30 has its own sampling fan. It does not need a second tiny fan to pull air through the box. Leave the SPS30's own inlet and outlet paths open to room air and separate them from the SHT41 vent path. Its idle mode can reduce power between samples, but the sensor needs a warm-up before each reading. A separate fan near the SHT41 could add heat and distort both temperature and relative-humidity readings, so do not include one unless later measurements demonstrate a benefit.
 
 The SHT41 should sample room air, not the enclosure's local temperature. Use a removable mock-up first and compare it beside a reference thermometer/hygrometer with the ESP board and particle sensor on and off. Fix placement and airflow before considering software offsets.
 
-The complete first mock-up is expected to be larger than the initial estimate. Cut no final wood until the actual board variant, SPS30 cable, divider, vents, and sensor orientation have been laid out together.
+The next purchase is wood or sheet material for a removable mock-up, not finished production wood. Make the 150 × 180 mm face and compare 40/50 mm depth against the 80 mm concept. Cut no final enclosure until the actual power assembly, battery fit, ESP32 board, SPS30 cable, divider, vents, hatch, and sensor orientation have been laid out together.

@@ -8,12 +8,12 @@ Keep the sensor and enclosure work as parallel tracks. The sensor track proves t
 - Home Assistant OS 18.3 is running in VM 100 and initial onboarding is complete. Its current LAN address is `192.168.2.202`.
 - The host is reachable at `192.168.2.50:8006`.
 - The server provides the local Home Assistant foundation. About 460 GB of internal storage is reported. The exact free space is not yet checked. A NAS and camera-recording capacity are not yet in place. The near-term target is one 2 TB drive after motherboard and connector compatibility is checked; larger storage is deferred while pricing and supply are monitored.
-- Current hardware status (1 November 2026): the ESP32-S3 Dev Kit (N16R8) and SHT41 are working reliably over Wi-Fi with Home Assistant. The SHT41 has been very accurate in the user's comparison so far. The SPS30 is not working and may have been damaged in the previous smoke incident; reorder one and a 4-channel I2C level shifter with clearly marked GND, LV, and HV connections.
+- Current hardware status (8 November 2026): the ESP32-S3 Dev Kit N16R8 and SHT41 work over USB/Wi-Fi with Home Assistant. The SPS30 returns readings when powered by a fused 5 V booster from a two-AA test pack; the ESP32 is still powered by USB. Four AA cells and ambient-light sensors are on hand. A two-18650 Li-ion prototype using the Pi Hut/DFRobot 2-way holder is being considered; purchase is not confirmed. The holder advertises overcharge/over-discharge and reverse-cell-polarity protection, but verify its complete protection behavior before considering it for a finished product. The small converters in the planned basket are for prototyping. The intended final power design is an integrated charging/protection board with regulated 5 V and 3.3 V outputs. Motion sensors are noted for 21 November. No SPS30 replacement is needed based on the current test.
 - Bench hardware is now connected: the ESP32-S3 Dev Kit packaging identifies the board as N16R8, and the SHT41 breakout is powered from 3.3 V, with SDA on GPIO 8 and SCL on GPIO 9. I2C detection is confirmed at address `0x44`, and serial temperature/humidity readings work. ESPHome is installed on the board, and Home Assistant now shows the Bench Room Temperature and Bench Room Humidity entities. A steady serial comparison showed the SHT41 at about 21.63–21.67 °C and 50.03–50.43% RH while a household reader showed 21.5 °C and 50% RH; the reader's own tolerance is unknown.
 - The PlatformIO bench firmware is in [firmware/sht41_i2c_scan](../firmware/sht41_i2c_scan/README.md). It scans for the SHT4x, then reads and prints temperature and humidity every three seconds. The Home Assistant device uses ESPHome firmware.
 - See [the server setup record](09-server-setup.md) for hardware, VM configuration, and troubleshooting notes.
 - The front-door panel, kitchen screen, and cameras have not started. The doorbell has not started and is deferred until the new door is installed. The outdoor weather-station track can start now.
-- The next electronics build is a two-AA battery prototype. The cells are HiQuick NiMH AA, marked 1.2 V / 2800 mAh; two in series give 2.4 V nominal and 6.72 Wh nominal by label. The working SHT41 board is recorded as an ESP32-S3 Dev Kit N16R8, but the exact cheap ESP32 board with the faulty 5 V rail still needs confirmation before selecting its regulator/input connection. The design target is a separate 3.3 V rail and switched 5 V rail; the faulty board 5 V pin is excluded.
+- The next electronics build is to assemble and measure a complete battery-powered prototype; keep prototype converter modules separate from the final integrated-board design. Confirm the exact ESP32 input before connecting any 3.3 V output. Test the SHT41, light sensor, and SPS30 together and measure runtime.
 
 ### Active next work
 
@@ -21,8 +21,8 @@ Keep the sensor and enclosure work as parallel tracks. The sensor track proves t
 2. Decide whether one exposed weather station plus separate temperature/humidity nodes at the front, rear, and greenhouse meets the need. Survey power, network, mounting, and exposure at each location.
 3. Choose between the easy local Ecowitt path (solar/AA outdoor array, separately powered Ethernet gateway) and a wired PoE station (check its exact PoE type and Home Assistant setup before purchase).
 4. Check the boiler/heating-controller make and model. Treat a Home Assistant outdoor-temperature entity and the boiler's own weather-compensation sensor/interface as separate compatibility questions.
-5. Reorder the SPS30 and a level shifter with GND pins for the indoor air-quality prototype.
-6. Build the two-AA power tree: identify the faulty-rail ESP32 board, then choose a 3.3 V regulator sized for ESP32 Wi-Fi bursts and a separate enabled 5 V converter for the SPS30. Measure current and runtime with the actual device and sampling schedule.
+5. Keep the working SPS30; confirm the I²C level shifter and matching cable are in hand and wired correctly.
+6. Prototype the candidate two-18650 system and integrated holder outputs. Confirm how the holder's 3.3 V output can safely power the exact ESP32 board, then test all sensors and measure whole-node current/runtime. Select a final battery configuration and integrated charging/protection/dual-rail power board only after these measurements.
 
 ## Phase 0 — Survey and requirements
 
@@ -36,9 +36,9 @@ Keep the sensor and enclosure work as parallel tracks. The sensor track proves t
 ## Phase 1 — Desk prototype
 
 - The bench sensor track is underway with the ESP32-S3 Dev Kit N16R8 and SHT41 already reporting to Home Assistant. These are the selected parts; the earlier shopping-list models are alternatives, not requirements.
-- Add one mini PIR motion sensor to the working ESPHome node as a trial, using a free GPIO; check whether pets trigger it. Radar is a later alternative only if detecting still occupancy is needed.
-- Reorder the SPS30 and a 3.3 V / 5 V I2C level converter with accessible common GND connections; the previous SPS30 is not working and may have been damaged.
-- Build and power the sensor node from two removable rechargeable AA cells using the separate regulated rails described in [the system architecture](02-system-architecture.md). Use a bench supply only to set up and characterize the power modules, not as the final supply path.
+- When the motion sensors noted for 21 November arrive, identify the exact module and test one on a free GPIO; check whether pets trigger it.
+- The SPS30 is now returning readings from the 5 V booster. Confirm the existing I²C level converter has clear GND/LV/HV connections; do not order a replacement SPS30 unless testing shows it is needed.
+- Wire the purchased ambient-light sensor once its exact model and pinout are confirmed, then prototype complete-node power using the selected battery option and holder/converter modules. Confirm the ESP32 board input and measure runtime before choosing the final integrated power design.
 - Connect it to a local Home Assistant instance, initially using a suitable existing machine or virtual machine if available.
 - Record the bill of materials, configuration, readings, reboots, and network behavior.
 
@@ -46,10 +46,10 @@ Keep the sensor and enclosure work as parallel tracks. The sensor track proves t
 
 ## Phase 2 — First room node
 
-- In parallel with sensor testing, sketch and mock up the intended wooden enclosure as two compartments: ESP32 and protected removable AA holder above, sensor chamber below, with protected wire pass-throughs between them. Keep the cells removable and charge them externally.
+- In parallel with sensor testing, buy sheet wood/material for a removable enclosure mock-up. Use the Gemini images as appearance/layout references: light wood, two front sensor domes, right-side hatch and three LEDs, lower perforated vent field. Keep the face at about 150 × 180 mm initially; compare 40 and 50 mm depth with the pictured 80 mm concept. These are not final dimensions.
 - Make a removable cardboard or scrap-wood mock-up before cutting final wood. Keep the SHT41 in a passive, room-vented nook separate from the SPS30 outlet and ESP board.
 - Use the SPS30 fan and air ports for PM sampling; do not add a separate fan beside the SHT41 unless measurements show it helps without biasing readings.
-- Fit-check the actual board, SPS30 cable, divider, vents, and sensor orientation, then test readings with the electronics running before making final cuts.
+- Fit-check the real cells/holder, power board, ESP32, SPS30 cable, divider, vents, hatch, and sensor orientation at each depth. Test readings and airflow with the electronics running before making final cuts.
 - Check temperature readings against a separate reference instrument.
 - Keep the PIR only if motion detection is useful in the chosen room; confirm its wooden enclosure opening leaves the lens exposed to the room.
 - Observe pet and room-layout effects for several days before writing automations.

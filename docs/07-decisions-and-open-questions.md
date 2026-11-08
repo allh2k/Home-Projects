@@ -5,23 +5,24 @@
 | ID | Decision | Status |
 | --- | --- | --- |
 | D-01 | Build a modular system rather than one board for the entire house. | Agreed direction |
-| D-02 | The first working SHT41 bench node used USB power; the next power prototype is the two-AA design in D-07. | USB bench node implemented; AA power build planned |
+| D-02 | The first working SHT41 bench node uses USB power; a two-AA test pack and fused 5 V booster power the SPS30 test. | Implemented separately; full-node battery power still unresolved |
 | D-03 | Use Home Assistant for local coordination, dashboards, and the first ESPHome prototype. | Agreed; installed and running |
 | D-04 | ESPHome is the leading candidate for the first ESP-based room prototype. | Provisional; verify board and component support |
 | D-05 | Do not assume fan remotes are 433 MHz. Identify each remote first. | Required |
 | D-06 | Do not assume alarm wiring is suitable for power until its panel, cable, topology, condition, and load capacity are identified. Battery charging requires a separate, correctly matched charger. | Required |
-| D-07 | Build and measure a two-AA rechargeable battery prototype now; use the measured runtime to decide the final reporting/sampling schedule. | Agreed direction; HiQuick NiMH AA cells marked 1.2 V / 2800 mAh; exact ESP32 board model still needed |
+| D-07 | Build and measure a battery-powered prototype before selecting final chemistry or runtime schedule. | Agreed; two-18650 Li-ion prototype with the Pi Hut/DFRobot 2-way holder is being considered; four AA cells also on hand; no purchase or final battery configuration confirmed |
 | D-08 | Defer alarm replacement, cameras, and window/curtain motors to later, separately scoped phases. | Agreed direction |
 | D-09 | Do not buy hardware for every room before one room pattern is understood. | Agreed direction |
 | D-10 | Use the ESP32-S3 Dev Kit N16R8 and SHT41 breakout for the working bench sensor. | Implemented; reporting over Wi-Fi to Home Assistant |
 | D-11 | Use Proxmox VE on the old PC as the host, with Home Assistant OS in a VM. | Implemented; setup record in [docs/09-server-setup.md](09-server-setup.md) |
 | D-12 | Target one repeatable indoor room box for each of 11 rooms, plus one or two separate outbuilding nodes. | Agreed direction; roll out after one indoor prototype is proven; sensor population and outbuilding design remain open |
 | D-13 | Evaluate whether identified legacy alarm cable can provide low-voltage power to selected room nodes. | Proposed; no wiring or power supply selected until survey and load/voltage-drop checks |
-| D-14 | Replace the non-working SPS30 and use an I2C level shifter with accessible GND, LV, and HV connections. | Planned; suspected damage during the smoke incident; not reordered |
+| D-14 | Use the SPS30 for particle measurements with an I²C level shifter where required by the selected interface. | SPS30 is returning readings on the fused 5 V booster; verify level-shifter stock/wiring; no replacement sensor currently needed |
 | D-15 | Start the outdoor weather station track; compare local HA support against the preference for wired/PoE high-mount sensors. | Active; choose one exposed wind/rain station plus optional front/rear/greenhouse temperature-humidity nodes |
 | D-16 | Defer the doorbell until the new front door is installed; plan its cables before the frame/wall work is closed. | Planned; Cat6 home run and separate two-core low-voltage bell cable are the prewire target |
 | D-17 | Add one compatible 2 TB drive as near-term server expansion; defer NAS/camera bulk storage pending capacity and market review. | Planned; check motherboard slots, SATA ports, free bay, and current free space before purchase |
-| D-18 | Use separate regulated 3.3 V and switched 5 V rails from the two-AA pack; do not rely on the cheap ESP32 board's faulty 5 V rail. | Power architecture selected; cell labels recorded; regulator modules depend on identifying the faulty-rail board |
+| D-18 | Prototype with discrete power modules as needed; final product should use an integrated Li-ion charging/protection board with regulated 5 V and 3.3 V rails. Do not rely on the faulty ESP32 development-board 5 V rail. | Direction agreed; candidate two-cell holder provides charging, overcharge/over-discharge and reverse-cell-polarity protection plus both rails; verify complete protection, cell arrangement, ESP32 input, and final power-board design |
+| D-19 | Build a removable wooden enclosure mock-up before choosing final dimensions or buying finished wood. | Face starts at 150 mm wide × 180 mm high; compare 40 mm and 50 mm depths with the 80 mm concept; all dimensions provisional |
 
 ## Open questions
 
@@ -69,6 +70,8 @@
 - What screen size, brightness, power, and mounting are acceptable for each panel?
 - What battery service interval is acceptable after power has been measured?
 - What exact ESP32 board model is printed on the boards, and which 5 V loads besides the SPS30 must be supported?
+- Which exact cells, two-cell configuration, charger/protection circuit, and integrated dual-rail power board should the final product use?
+- Does the actual battery holder and power assembly fit within a 40 mm or 50 mm enclosure depth with safe wiring and service clearance?
 - What is the minimum acceptable runtime, and how often must the SHT41 and SPS30 update?
 - Should the SPS30 run continuously, or can it be switched on for periodic measurements?
 - What data retention and backup approach is wanted for sensor history and any camera recordings?

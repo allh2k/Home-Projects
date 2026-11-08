@@ -8,6 +8,7 @@ constexpr uint8_t SHT4X_ADDRESS_1 = 0x44;
 constexpr uint8_t SHT4X_ADDRESS_2 = 0x45;
 constexpr uint8_t SPS30_ADDRESS = 0x69;
 constexpr size_t SPS30_FLOAT_DATA_LENGTH = 60;
+constexpr uint32_t READ_INTERVAL_MS = 30000;
 
 uint8_t sensorAddress = 0;
 bool sps30Started = false;
@@ -86,7 +87,9 @@ bool readSps30(float (&measurements)[10]) {
   Wire.beginTransmission(SPS30_ADDRESS);
   Wire.write(0x03); // Read Measured Values pointer, 0x0300
   Wire.write(0x00);
-  if (Wire.endTransmission(false) != 0) {
+  // Send the SPS30 read command as a complete I2C transaction. The sensor
+  // expects a STOP before the separate read transaction.
+  if (Wire.endTransmission() != 0) {
     printBoth("SPS30 could not set the measurement-data pointer.");
     return false;
   }
@@ -226,5 +229,5 @@ void loop() {
     }
   }
 
-  delay(3000);
+  delay(READ_INTERVAL_MS);
 }

@@ -20,10 +20,11 @@ This is a planning document, not an electrical wiring guide. Stop and get qualif
 
 ## Batteries
 
-- The active battery prototype uses two removable HiQuick NiMH AA cells in series (marked 1.2 V / 2800 mAh). Treat capacity as a label estimate until runtime is measured.
-- Hold the pair securely in a correctly wired holder; use same chemistry, model, age, and charge state. Include a power switch, short/reverse-polarity protection, and a conservative low-battery cutoff appropriate to the confirmed cell chemistry.
-- Use separate regulated 3.3 V and 5 V rails. Do not use the faulty board 5 V pin, power loads through GPIO, or assume the dev board's 3.3 V output is a distribution supply.
-- Remove the AA cells and charge them in a charger designed for that chemistry. Do not charge them inside the enclosure. Do not use a TP4056 or lithium-ion charging module for NiMH cells; lithium-ion is a separate later redesign.
+- The current bench test uses two AA cells to power the fused 5 V SPS30 booster; the ESP32 remains on USB. A separate two-18650 Li-ion power prototype is being considered using a holder that advertises integrated charging, overcharge/over-discharge protection, and 5 V/3.3 V outputs. This prototype choice is not a final battery/PCB selection.
+- For any lithium-ion prototype, use two identical, matched cells in the holder and follow its charging instructions. The holder listing specifies overcharge/over-discharge and reverse-cell-polarity protection; it does not clearly specify every overcurrent/short-circuit behavior required of a final product. Do not charge cells outside the compatible charger/holder, mix cell types or states, or use damaged/wrapped cells. Confirm the board's protection and current limits before leaving it unattended.
+- The final product is intended to use an integrated power board with charging, cell protection, and regulated 5 V and 3.3 V rails. Verify short-circuit/reverse-polarity protection, low-voltage cutoff, charge behavior, and thermal performance for the actual chosen design; do not infer every protection feature from a generic “BMS” claim.
+- Do not use the faulty development-board 5 V pin, power loads through GPIO, or assume the dev board's 3.3 V output is a distribution supply. Do not connect two regulated sources to the same input rail simultaneously.
+- The existing AA cells remain a separate test supply; charge them only in a NiMH charger designed for their chemistry. Never use a Li-ion charger for NiMH cells or vice versa.
 - Do not improvise battery wiring or use cells with damaged wrappers, leakage, corrosion, or mismatched charge state.
 - Keep cells away from sensor heat and ensure they are protected from shorts and physical damage.
 

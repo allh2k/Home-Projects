@@ -2,11 +2,13 @@
 
 Fill this in before selecting hardware. Record only what is useful for the design. Do not put Wi-Fi passwords, camera passwords, alarm codes, or other credentials in these notes.
 
-## Status update (1 November 2026)
+## Status update (8 November 2026)
 
 - Proxmox and Home Assistant are installed and working on the former PC; about 460 GB internal storage is reported. Check exact free space and disk details.
 - ESP32-S3 N16R8 + SHT41 is working over Wi-Fi with Home Assistant; SHT41 readings have been very accurate.
-- SPS30 is not working; replacement and a level shifter with GND pins are planned.
+- SPS30 now returns readings when powered by a fused 5 V booster from a two-AA test pack. The ESP32 is still powered over USB. No SPS30 replacement is currently indicated; confirm the level-shifter wiring and sensor interface before integrating it.
+- A Li-ion power prototype using two 18650 cells in the Pi Hut/DFRobot 2-way holder is being considered. The final product is expected to use an integrated charging/protection/power board; no final battery configuration or PCB is selected.
+- Enclosure concept: light wood, two front sensor domes, a small right-side battery/service hatch, three status LEDs, and a perforated lower-front vent area. The 150 × 180 mm face is a starting point; 40 mm and 50 mm depths are being considered against an 80 mm concept. Make a removable mock-up before final wood.
 - Small front-door panel, kitchen screen, and cameras: not started. Doorbell: deferred until the new door is installed. Weather station: ready to plan.
 
 ## Room inventory

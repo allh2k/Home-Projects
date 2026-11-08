@@ -14,7 +14,7 @@ The target is one room box in each of 11 indoor rooms, with one or two additiona
 - Motion or presence sensing, with the ability to learn how pets affect readings.
 - Indoor particle readings for PM2.5 and PM10 where worthwhile.
 - Possible control of six ceiling fan/LED-light combinations, the fireplace, and televisions after each device's remote method and safe control options are identified.
-- A removable two-AA rechargeable battery build is now the next power prototype. Measure real runtime before setting a service interval; lithium-ion is a possible later redesign, not part of this build.
+- The current desk power test uses two AA cells for the fused 5 V SPS30 supply; the ESP32 remains on USB. The next power prototype may use two 18650 Li-ion cells in the Pi Hut/DFRobot 2-way holder to evaluate charging, protection, and 5 V/3.3 V rails. This is a prototype direction, not a confirmed final battery/PCB design. Measure real runtime before setting a service interval.
 - Investigation of whether existing alarm wiring can provide power, only after the system and wiring are identified.
 
 The 11 indoor boxes are the intended deployment, rolled out after one prototype is proven. Not every box needs every sensor: particle sensors, screens, and actuators remain optional. Greenhouse and shed nodes are separate outdoor or outbuilding projects, with enclosures and sensors chosen for their local conditions.
@@ -46,7 +46,7 @@ These are later-stage ideas. They need separate power, safety, manual-control, a
 | R-02 | Begin without altering mains wiring, alarm circuits, windows, or curtains. |
 | R-03 | Support room-level temperature and humidity monitoring as the first useful feature. |
 | R-04 | Survey each existing remote-controlled device before choosing a control method. |
-| R-05 | Build around two removable rechargeable AA cells; measure runtime on the complete device before setting a service interval or choosing another chemistry. |
+| R-05 | Compare practical rechargeable battery options on the complete prototype; measure runtime before setting a service interval or fixing the final chemistry. |
 | R-06 | Keep camera and microphone use, storage, and access under the homeowner's control. |
 | R-07 | Keep the existing alarm operational unless a separate replacement project is properly planned and commissioned. |
 | R-08 | Allow a room device or the server to fail without disabling unrelated basic functions. |
@@ -66,4 +66,4 @@ These are later-stage ideas. They need separate power, safety, manual-control, a
 
 ## First project milestone
 
-The server and first SHT41-to-Home-Assistant path are working. The next active track is a removable two-AA power build with separate regulated 3.3 V and switched 5 V rails. In parallel, replace the suspected-damaged SPS30 and use a level shifter with explicit ground connections. Keep the doorbell on hold until the new door work, and defer camera deployment until storage is expanded and a recording/retention plan is chosen.
+The server and first SHT41-to-Home-Assistant path are working. The SPS30 is returning readings on a fused 5 V booster; no replacement is currently indicated. The next active tracks are a complete battery-powered bench prototype and a full-size wooden enclosure mock-up. The 180 × 150 mm face is a starting point; test 40 and 50 mm depths against the 80 mm concept. Keep the doorbell on hold until the new door work, and defer camera deployment until storage is expanded and a recording/retention plan is chosen.

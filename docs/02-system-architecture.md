@@ -14,9 +14,15 @@ The server is a coordinator, not a reason to put every feature into one physical
 
 ## First communications choice
 
-The first ESP32/SHT41 device is already reporting to Home Assistant over Wi-Fi. The next power prototype uses two removable rechargeable AA cells and independent regulated rails; the faulty/unused 5 V output on the cheap development boards is not part of the supply design.
+The first ESP32/SHT41 device is already reporting to Home Assistant over Wi-Fi. The ESP32 still runs from USB, while the SPS30 has been tested from a fused 5 V booster powered by a two-AA test pack. A Li-ion prototype using two 18650 cells and the Pi Hut/DFRobot 2-way holder is being considered; its charging, stated protection features, and regulated 5 V/3.3 V outputs make it a useful way to test the power architecture. The final product is intended to use an integrated power board; discrete converter modules are prototype parts, not a settled final design.
 
-## Two-AA power architecture
+## Candidate Li-ion prototype
+
+The candidate holder accepts two 18650 cells and provides USB charging, overcharge/over-discharge protection, reverse-cell-polarity protection, and regulated 5 V/2 A and 3.3 V/1 A outputs. The product page does not establish every protection function needed for a finished product, so verify overcurrent and short-circuit behavior rather than assuming “BMS” covers it. Use two matching cells and follow the holder's instructions. It is not yet confirmed as the final enclosure power solution. Confirm the exact board input before powering the ESP32, and do not connect the holder's 3.3 V rail and a separate 3.3 V converter to the same board at once. For a production enclosure, the intended direction is a compact, integrated charger/protection/regulator assembly with adequate service access and airflow.
+
+## Earlier two-AA test architecture (reference)
+
+This is the former rechargeable-AA prototype plan, not a settled next build or final-product power choice. It remains useful as a reference for the two-AA SPS30 test and for understanding the separate 3.3 V and 5 V loads.
 
 The selected cells are HiQuick AA NiMH, marked 1.2 V and 2800 mAh. Use two cells from the same matched set in series: about 2.4 V nominal, 2800 mAh pack capacity, and 6.72 Wh nominal energy from the label. Treat the printed capacity as an estimate until runtime is measured. A pack voltage this low cannot feed an ESP32 3.3 V supply directly, so regulate it before it reaches any load.
 

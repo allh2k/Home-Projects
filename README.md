@@ -2,7 +2,7 @@
 
 A personal, modular home-automation project built around small room devices, a local home server, and gradual additions that can be understood and maintained.
 
-**Current status (1 November 2026):** Proxmox and Home Assistant are running on the former PC, and an ESP32-S3 N16R8 with an SHT41 is reporting reliably over Wi-Fi. A two-AA NiMH power prototype is now planned using HiQuick cells marked 1.2 V / 2800 mAh, with separate regulated 3.3 V and switched 5 V rails; the exact cheap ESP32 board with the faulty 5 V rail still needs identification. About 460 GB of internal storage is reported; one compatible 2 TB expansion is the near-term target, with larger NAS/camera storage deferred. The SPS30 is not working and may have been damaged; replacement and a level shifter with GND pins are planned. Weather station planning can start now. The front-door panel, kitchen screen, and cameras have not started; the doorbell is waiting for the new door.
+**Current status (8 November 2026):** Proxmox and Home Assistant are running on the former PC. The ESP32-S3 N16R8 and SHT41 work over USB/Wi-Fi. The SPS30 returns readings while powered by a fused 5 V booster from a two-AA test pack; the ESP32 is still on USB. Four AA cells and the ambient-light sensors are on hand. The user is considering a Li-ion prototype using two 18650 cells and the Pi Hut/DFRobot 2-way holder, which provides charging/protection and 5 V and 3.3 V outputs; order/purchase is not confirmed. Small converter boards are for prototyping; the final product should use an integrated power solution. A wooden enclosure mock-up is the next purchase; keep 180 × 150 mm face size provisional and compare 40 and 50 mm depths against the 80 mm concept. Motion sensors are noted for 21 November. RF hardware is deferred. About 460 GB of server storage is reported; check compatibility and free space before the planned 2 TB expansion. The doorbell remains deferred until the new door.
 
 **Status:** the first desk prototype is reporting to Home Assistant. The ESP32-S3 Dev Kit packaging identifies the board as N16R8; it and the SHT41 breakout are connected on the bench. ESPHome is running on the board, and Home Assistant shows the Bench Room Temperature and Bench Room Humidity entities. I2C communication is confirmed at `0x44`. A steady serial comparison showed the SHT41 at about 21.63–21.67 °C and 50.03–50.43% RH while a household reader showed 21.5 °C and 50% RH; the reader's own tolerance is unknown. PlatformIO remains available for the bench reader firmware.
 
@@ -21,9 +21,9 @@ A personal, modular home-automation project built around small room devices, a l
 
 Use separate devices for separate jobs instead of trying to fit the entire house onto one board. A home server can coordinate sensors and dashboards, while room devices handle local sensing and simple actions.
 
-The server and first SHT41-to-Home-Assistant path are now working. The next power build is a two-AA NiMH prototype with separate 3.3 V and switched 5 V rails; identify the exact faulty-rail ESP32 board before selecting its regulator. Then measure runtime with the actual Wi-Fi and SPS30 schedule, while continuing the weather-station and outdoor sensor plan.
+The server and SHT41-to-Home-Assistant path are working. The SPS30 returns readings on a fused 5 V booster, while the ESP32 remains USB-powered. Next, build and measure a battery-powered prototype, then mock up the enclosure at more than one depth. Li-ion power is a candidate direction; the final power board is expected to integrate charging, protection, and both voltage rails, while discrete modules remain useful on the bench.
 
-The ceiling-fan remotes, alarm wiring, exact ESP32 board with the faulty 5 V rail, and battery runtime remain open. AA cells will be charged externally in a NiMH charger; lithium-ion is deferred.
+The ceiling-fan remotes, alarm wiring, exact ESP32 board with the faulty 5 V rail, and battery runtime remain open. Keep the AA and Li-ion prototype supplies separate and use chemistry-matched chargers; the Li-ion power architecture remains a candidate pending prototype measurements.
 
 ## Design principles
 
