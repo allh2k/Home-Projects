@@ -1,16 +1,22 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <cstring>
+#include <WiFi.h>
+
+const char* ssid = "Asuna";
+const char* password = "1092926983";
 
 constexpr int SDA_PIN = 8;
 constexpr int SCL_PIN = 9;
 constexpr uint8_t SHT4X_ADDRESS_1 = 0x44;
 constexpr uint8_t SHT4X_ADDRESS_2 = 0x45;
+constexpr uint8_t BH1750_ADDRESS = 0x23;
 constexpr uint8_t SPS30_ADDRESS = 0x69;
 constexpr size_t SPS30_FLOAT_DATA_LENGTH = 60;
 constexpr uint32_t READ_INTERVAL_MS = 30000;
 
 uint8_t sensorAddress = 0;
+bool bh1750Started = false;
 bool sps30Started = false;
 
 void printBoth(const char *message) {
@@ -61,6 +67,43 @@ uint8_t crc8(const uint8_t *data, size_t length) {
 bool i2cDevicePresent(uint8_t address) {
   Wire.beginTransmission(address);
   return Wire.endTransmission() == 0;
+}
+
+bool startBh1750Measurement() {
+  Wire.beginTransmission(BH1750_ADDRESS);
+  Wire.write(0x01); // Power on
+  if (Wire.endTransmission() != 0) {
+    printBoth("BH1750 power-on command failed.");
+    return false;
+  }
+
+  Wire.beginTransmission(BH1750_ADDRESS);
+  Wire.write(0x10); // Continuous high-resolution mode
+  if (Wire.endTransmission() != 0) {
+    printBoth("BH1750 measurement-mode command failed.");
+    return false;
+  }
+
+  delay(180); // Allow the first high-resolution measurement to complete.
+  printBoth("BH1750 measurement started at 0x23.");
+  return true;
+}
+
+bool readBh1750(float &illuminanceLux) {
+  const size_t received = Wire.requestFrom(
+      BH1750_ADDRESS, static_cast<uint8_t>(2), true);
+  if (received != 2) {
+    printBoth("BH1750 returned fewer than 2 data bytes.");
+    while (Wire.available()) {
+      Wire.read();
+    }
+    return false;
+  }
+
+  const uint16_t raw = (static_cast<uint16_t>(Wire.read()) << 8) |
+                       static_cast<uint16_t>(Wire.read());
+  illuminanceLux = raw / 1.2f;
+  return true;
 }
 
 bool startSps30Measurement() {
@@ -172,7 +215,7 @@ void setup() {
   delay(1000);
 
   printBoth("");
-  printBoth("ESP32-S3 SHT41 + SPS30 reader");
+  printBoth("ESP32-S3 SHT41 + BH1750 + SPS30 reader");
   char pinMessage[48];
   snprintf(pinMessage, sizeof(pinMessage), "SDA: GPIO %d, SCL: GPIO %d", SDA_PIN, SCL_PIN);
   printBoth(pinMessage);
@@ -185,6 +228,13 @@ void setup() {
   }
 
   sensorAddress = findSht4x();
+
+  if (i2cDevicePresent(BH1750_ADDRESS)) {
+    printBoth("BH1750 detected at 0x23.");
+    bh1750Started = startBh1750Measurement();
+  } else {
+    printBoth("BH1750 not detected at 0x23. Check its power, ADDR, SDA and SCL.");
+  }
 
   if (i2cDevicePresent(SPS30_ADDRESS)) {
     printBoth("SPS30 detected at 0x69.");
@@ -209,6 +259,21 @@ void loop() {
       char message[80];
       snprintf(message, sizeof(message), "Temperature: %.2f C, humidity: %.2f %%",
                temperatureC, relativeHumidity);
+      printBoth(message);
+    }
+  }
+
+  if (!bh1750Started && i2cDevicePresent(BH1750_ADDRESS)) {
+    printBoth("BH1750 detected at 0x23.");
+    bh1750Started = startBh1750Measurement();
+  }
+
+  if (bh1750Started) {
+    float illuminanceLux = 0.0f;
+    if (readBh1750(illuminanceLux)) {
+      char message[48];
+      snprintf(message, sizeof(message), "BH1750 illuminance: %.1f lux",
+               illuminanceLux);
       printBoth(message);
     }
   }
